@@ -30,6 +30,14 @@ import { shareOrDownloadCard } from "@/lib/share-card";
 import type { Tables } from "@/integrations/supabase/types";
 
 export const Route = createFileRoute("/app")({
+  head: () => ({ meta: [
+    { title: "ChartSeer — iChart" },
+    { name: "description", content: "Analyze price charts and review your prediction history with ChartSeer." },
+    { property: "og:title", content: "ChartSeer — iChart" },
+    { property: "og:description", content: "Analyze price charts and review your prediction history with ChartSeer." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AppPage,
 });
 

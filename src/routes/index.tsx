@@ -4,6 +4,14 @@ import { Button } from "@/components/ui/button";
 import { LineChart, Radio, Sparkles, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/")({
+  head: () => ({ meta: [
+    { title: "iChart — ChartSeer & ICT Pulse" },
+    { name: "description", content: "Explore ChartSeer chart analysis and ICT Pulse market timing in iChart." },
+    { property: "og:title", content: "iChart — ChartSeer & ICT Pulse" },
+    { property: "og:description", content: "Explore ChartSeer chart analysis and ICT Pulse market timing in iChart." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: Landing,
 });
 
