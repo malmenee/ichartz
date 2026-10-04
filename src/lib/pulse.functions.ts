@@ -19,7 +19,7 @@ export const getPulse = createServerFn({ method: "GET" })
       if (!Array.isArray(feed)) throw new Error("Unexpected calendar response");
       const events: GuideNewsEvent[] = feed
         .filter((event) => event && String(event.impact).toLowerCase() === "high" && typeof event.date === "string")
-        .map((event) => {
+        .map((event): GuideNewsEvent | null => {
           const date = new Date(event.date);
           if (Number.isNaN(date.getTime())) return null;
           const parts = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", month: "2-digit", day: "2-digit", year: "numeric" }).formatToParts(date);

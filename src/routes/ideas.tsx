@@ -30,6 +30,14 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/ideas")({
+  head: () => ({ meta: [
+    { title: "Trade Ideas — iChart" },
+    { name: "description", content: "Review chart-based trade ideas and market context in iChart." },
+    { property: "og:title", content: "Trade Ideas — iChart" },
+    { property: "og:description", content: "Review chart-based trade ideas and market context in iChart." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   validateSearch: searchSchema,
   component: IdeasPage,
 });

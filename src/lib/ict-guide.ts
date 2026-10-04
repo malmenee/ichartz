@@ -484,13 +484,13 @@ export function buildRightNow({ etParts, window, day, season, newsEvents, isClos
   if (todayEvents.some((event) => /non.?farm|nfp/i.test(event.title))) {
     warnings.push({
       kind: "NFP",
-      text: "NFP Friday — report at 8:30 AM ET. Elevated manipulation; let the initial reaction resolve before committing size.",
+      text: "NFP is listed today. Elevated manipulation is possible; let the initial reaction resolve before committing size.",
     });
   }
   if (todayEvents.some((event) => /fomc|federal funds|rate decision/i.test(event.title))) {
     warnings.push({
       kind: "FOMC",
-      text: "Wednesday = FOMC day. Expect a two-stage move — an initial (often false) push, then the real leg. Don't assume the first move is the real one.",
+      text: "A Fed decision is listed today. Expect a possible two-stage move; don't assume the first move is the real one.",
     });
   }
   if (newsEvents.some((event) => /non.?farm|nfp/i.test(event.title)) && (etParts.weekdayKey === "thursday" || etParts.weekdayKey === "friday")) {

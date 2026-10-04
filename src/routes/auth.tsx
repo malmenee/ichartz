@@ -9,6 +9,14 @@ import { LineChart } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth")({
+  head: () => ({ meta: [
+    { title: "Sign in — iChart" },
+    { name: "description", content: "Sign in to your iChart account to use ChartSeer and ICT Pulse." },
+    { property: "og:title", content: "Sign in — iChart" },
+    { property: "og:description", content: "Sign in to your iChart account to use ChartSeer and ICT Pulse." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: AuthPage,
 });
 
