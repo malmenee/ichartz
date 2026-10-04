@@ -1,0 +1,3 @@
+- [ ] Bring theapp's daily/weekly maps, timing, seasonal notes, news playbook, and transcript guide into ICT Pulse.
+- [ ] Make the live news panel and current guidance work together with refresh and failure states.
+- [ ] Verify ICT Pulse on desktop and mobile, including news and expanded guides.

@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep ICT Pulse's transcript-derived educational guide in a browser-safe typed module and live calendar fetching in a server function; this separates stable reference material from changing external data.
