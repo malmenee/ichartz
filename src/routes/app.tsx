@@ -105,8 +105,11 @@ function AppPage() {
           .from("charts")
           .upload(path, f, { contentType: f.type });
         if (upErr) throw upErr;
-        const { data: pub } = supabase.storage.from("charts").getPublicUrl(path);
-        uploaded.push({ timeframe: tf, url: pub.publicUrl });
+        const { data: signed, error: signErr } = await supabase.storage
+          .from("charts")
+          .createSignedUrl(path, 60 * 60 * 24 * 365);
+        if (signErr || !signed) throw signErr ?? new Error("Could not read upload");
+        uploaded.push({ timeframe: tf, url: signed.signedUrl });
       }
 
       const resolved = history.filter(

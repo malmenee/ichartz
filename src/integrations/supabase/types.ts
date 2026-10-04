@@ -14,13 +14,132 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      entitlements: {
+        Row: {
+          created_at: string
+          id: string
+          paid: boolean
+          paid_at: string | null
+          stripe_session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          paid?: boolean
+          paid_at?: string | null
+          stripe_session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          paid?: boolean
+          paid_at?: string | null
+          stripe_session_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      predictions: {
+        Row: {
+          asset: string | null
+          confidence: number | null
+          confidence_long: number | null
+          confidence_short: number | null
+          created_at: string
+          id: string
+          image_url: string | null
+          images: Json | null
+          notes: string | null
+          outcome: string | null
+          prediction: string | null
+          prediction_long: string | null
+          prediction_short: string | null
+          price_at_prediction: number | null
+          price_at_resolution: number | null
+          price_provider: string | null
+          price_symbol: string | null
+          reasoning: string | null
+          reasoning_long: string | null
+          reasoning_short: string | null
+          resolve_at: string | null
+          resolved_at: string | null
+          rules_applied: Json | null
+          timeframe: string | null
+          user_id: string
+        }
+        Insert: {
+          asset?: string | null
+          confidence?: number | null
+          confidence_long?: number | null
+          confidence_short?: number | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          images?: Json | null
+          notes?: string | null
+          outcome?: string | null
+          prediction?: string | null
+          prediction_long?: string | null
+          prediction_short?: string | null
+          price_at_prediction?: number | null
+          price_at_resolution?: number | null
+          price_provider?: string | null
+          price_symbol?: string | null
+          reasoning?: string | null
+          reasoning_long?: string | null
+          reasoning_short?: string | null
+          resolve_at?: string | null
+          resolved_at?: string | null
+          rules_applied?: Json | null
+          timeframe?: string | null
+          user_id: string
+        }
+        Update: {
+          asset?: string | null
+          confidence?: number | null
+          confidence_long?: number | null
+          confidence_short?: number | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          images?: Json | null
+          notes?: string | null
+          outcome?: string | null
+          prediction?: string | null
+          prediction_long?: string | null
+          prediction_short?: string | null
+          price_at_prediction?: number | null
+          price_at_resolution?: number | null
+          price_provider?: string | null
+          price_symbol?: string | null
+          reasoning?: string | null
+          reasoning_long?: string | null
+          reasoning_short?: string | null
+          resolve_at?: string | null
+          resolved_at?: string | null
+          rules_applied?: Json | null
+          timeframe?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_pattern_stats: {
+        Args: never
+        Returns: {
+          losses: number
+          tag: string
+          total: number
+          win_rate: number
+          wins: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
