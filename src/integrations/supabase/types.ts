@@ -125,6 +125,44 @@ export type Database = {
         }
         Relationships: []
       }
+      trade_ideas: {
+        Row: {
+          created_at: string
+          id: string
+          news_count: number
+          plan: Json
+          prediction_id: string
+          style: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          news_count?: number
+          plan: Json
+          prediction_id: string
+          style: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          news_count?: number
+          plan?: Json
+          prediction_id?: string
+          style?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trade_ideas_prediction_id_fkey"
+            columns: ["prediction_id"]
+            isOneToOne: false
+            referencedRelation: "predictions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
