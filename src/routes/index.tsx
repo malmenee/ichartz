@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { LineChart, Radio, Sparkles, ArrowRight, BarChart3, ShieldCheck, Activity } from "lucide-react";
+import { LineChart, Radio, ArrowRight, BarChart3, ShieldCheck, Activity } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
@@ -61,7 +61,7 @@ function Landing() {
           <div className="workspace-preview relative overflow-hidden rounded-lg border border-border bg-card/70 p-3 backdrop-blur-xl">
             <div className="flex items-center justify-between border-b border-border px-2 pb-3"><div className="flex items-center gap-2 text-xs font-medium"><BarChart3 className="h-4 w-4 text-primary" /> Today’s workspace</div><span className="font-mono text-[10px] uppercase tracking-widest text-signal">Live</span></div>
             <div className="grid gap-3 pt-3 sm:grid-cols-[1.2fr_.8fr]">
-              <div className="rounded-md border border-border bg-background/55 p-4"><div className="flex items-center justify-between"><span className="text-sm font-medium">NAS100 · 15m</span><span className="text-xs text-signal">Bullish 78%</span></div><div className="mt-5 flex h-32 items-end gap-1.5">{[32,48,39,66,55,78,62,88,72,94,82,104].map((height, index) => <span key={index} className="chart-bar flex-1 rounded-sm bg-primary/25" style={{ height }} />)}</div><div className="mt-4 flex justify-between text-[10px] uppercase tracking-widest text-muted-foreground"><span>London open</span><span>NY AM</span></div></div>
+              <div className="rounded-md border border-border bg-background/55 p-4"><div className="flex items-center justify-between"><span className="text-sm font-medium">NAS100 · 15m</span><span className="text-xs text-signal">Bullish 78%</span></div><div className="mt-5 flex h-32 items-end gap-1.5">{["h-8","h-12","h-10","h-16","h-14","h-20","h-16","h-24","h-20","h-28","h-24","h-32"].map((height, index) => <span key={index} className={`chart-bar flex-1 rounded-sm bg-primary/25 ${height}`} />)}</div><div className="mt-4 flex justify-between text-[10px] uppercase tracking-widest text-muted-foreground"><span>London open</span><span>NY AM</span></div></div>
               <div className="space-y-3"><div className="rounded-md border border-border bg-background/55 p-4"><p className="text-[10px] uppercase tracking-widest text-muted-foreground">Current window</p><p className="mt-2 font-medium">New York AM</p><p className="mt-1 text-xs text-muted-foreground">Watch for liquidity delivery after the open.</p></div><div className="rounded-md border border-border bg-background/55 p-4"><p className="text-[10px] uppercase tracking-widest text-muted-foreground">Saved playbook</p><p className="mt-2 text-2xl font-semibold">3 ideas</p><p className="mt-1 text-xs text-muted-foreground">Ready for review</p></div></div>
             </div>
           </div>

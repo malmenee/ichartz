@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   BarChart3,
-  Clock3,
   LineChart,
   Loader2,
   LogOut,
