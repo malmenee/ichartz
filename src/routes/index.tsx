@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { LineChart, Radio, Sparkles, ArrowRight } from "lucide-react";
+import { LineChart, Radio, ArrowRight, BarChart3, ShieldCheck, Activity } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
@@ -19,23 +19,17 @@ function Landing() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div
-        className="absolute inset-0 -z-10 opacity-30"
-        style={{
-          background:
-            "radial-gradient(60% 60% at 50% 0%, oklch(0.55 0.18 250 / 0.4), transparent 70%), radial-gradient(40% 40% at 90% 30%, oklch(0.6 0.2 160 / 0.3), transparent 70%)",
-        }}
-      />
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <div className="flex items-center gap-2 font-semibold">
-          <Sparkles className="h-5 w-5 text-primary" />
+    <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
+      <div className="landing-grid pointer-events-none absolute inset-0 opacity-35" />
+      <header className="relative z-20 mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8">
+        <div className="flex items-center gap-2.5 font-semibold">
+          <span className="flex h-8 w-8 items-center justify-center rounded-md border border-primary/25 bg-primary/10"><LineChart className="h-4 w-4 text-primary" /></span>
           iChart
         </div>
         {user ? (
-          <Link to="/app">
-            <Button variant="outline" size="sm">
-              Go to dashboard
+            <Link to="/dashboard">
+              <Button variant="outline" size="sm" className="gap-2">
+                My workspace <ArrowRight />
             </Button>
           </Link>
         ) : (
@@ -47,63 +41,54 @@ function Landing() {
         )}
       </header>
 
-      <main className="mx-auto max-w-4xl px-6 pt-16 pb-24 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
-          <Sparkles className="h-3 w-3 text-primary" />
-          Two tools. One account.
-        </div>
-        <h1 className="mt-6 text-5xl font-bold tracking-tight sm:text-6xl">
-          Trading tools built on
-          <br />
-          <span className="bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-transparent">
-            real price action.
-          </span>
-        </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-          iChart is home to ChartSeer and ICT Pulse — one account, two ways to trade
-          with more context and less guesswork.
-        </p>
+      <main className="relative z-10 mx-auto max-w-7xl px-5 pb-16 pt-12 sm:px-8 sm:pt-20">
+        <section className="grid items-center gap-14 lg:grid-cols-[1.08fr_.92fr]">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground backdrop-blur-md">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-signal" /> Market intelligence, unified
+            </div>
+            <h1 className="mt-7 max-w-3xl text-5xl font-semibold leading-[1.04] sm:text-6xl lg:text-7xl">
+              See the market.<br /><span className="text-primary">Build your plan.</span>
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">ChartSeer reads your price action. ICT Pulse keeps you aligned with timing and news. Every analysis and idea stays saved in your private workspace.</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link to={user ? "/dashboard" : "/auth"}><Button size="lg" className="h-12 gap-2 px-6">{user ? "Open workspace" : "Get started free"}<ArrowRight /></Button></Link>
+              <Link to="/pulse"><Button size="lg" variant="outline" className="h-12 gap-2 px-6"><Radio /> View live Pulse</Button></Link>
+            </div>
+            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-xs text-muted-foreground"><span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-signal" /> Private by default</span><span className="flex items-center gap-2"><Activity className="h-4 w-4 text-signal" /> Live market context</span></div>
+          </div>
 
-        <div className="mx-auto mt-16 grid max-w-3xl gap-6 text-left sm:grid-cols-2">
+          <div className="workspace-preview relative overflow-hidden rounded-lg border border-border bg-card/70 p-3 backdrop-blur-xl">
+            <div className="flex items-center justify-between border-b border-border px-2 pb-3"><div className="flex items-center gap-2 text-xs font-medium"><BarChart3 className="h-4 w-4 text-primary" /> Today’s workspace</div><span className="font-mono text-[10px] uppercase tracking-widest text-signal">Live</span></div>
+            <div className="grid gap-3 pt-3 sm:grid-cols-[1.2fr_.8fr]">
+              <div className="rounded-md border border-border bg-background/55 p-4"><div className="flex items-center justify-between"><span className="text-sm font-medium">NAS100 · 15m</span><span className="text-xs text-signal">Bullish 78%</span></div><div className="mt-5 flex h-32 items-end gap-1.5">{["h-8","h-12","h-10","h-16","h-14","h-20","h-16","h-24","h-20","h-28","h-24","h-32"].map((height, index) => <span key={index} className={`chart-bar flex-1 rounded-sm bg-primary/25 ${height}`} />)}</div><div className="mt-4 flex justify-between text-[10px] uppercase tracking-widest text-muted-foreground"><span>London open</span><span>NY AM</span></div></div>
+              <div className="space-y-3"><div className="rounded-md border border-border bg-background/55 p-4"><p className="text-[10px] uppercase tracking-widest text-muted-foreground">Current window</p><p className="mt-2 font-medium">New York AM</p><p className="mt-1 text-xs text-muted-foreground">Watch for liquidity delivery after the open.</p></div><div className="rounded-md border border-border bg-background/55 p-4"><p className="text-[10px] uppercase tracking-widest text-muted-foreground">Saved playbook</p><p className="mt-2 text-2xl font-semibold">3 ideas</p><p className="mt-1 text-xs text-muted-foreground">Ready for review</p></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-24 border-t border-border pt-10">
+          <div className="mb-7"><p className="text-xs uppercase tracking-widest text-muted-foreground">Two focused tools</p><h2 className="mt-2 text-2xl font-semibold">From chart to trade plan</h2></div>
+          <div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-2">
           <Link
             to="/app"
-            className="group rounded-2xl border border-border bg-card/40 p-7 backdrop-blur transition hover:border-primary/50"
+            className="group bg-card p-7 transition hover:bg-accent/60 sm:p-9"
           >
-            <LineChart className="h-6 w-6 text-primary" />
-            <div className="mt-4 text-xl font-semibold">ChartSeer</div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Upload a chart screenshot and get a multi-timeframe price-action read —
-              structure, key levels, and a verified-accuracy track record that
-              improves as more people use it.
-            </p>
-            <span className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-primary">
-              Open ChartSeer <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
+            <LineChart className="h-6 w-6 text-primary" /><div className="mt-8 text-2xl font-semibold">ChartSeer</div><p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">Upload charts across timeframes and turn raw price action into a structured directional read.</p><span className="mt-7 inline-flex items-center gap-2 text-sm font-medium text-primary">
+              Analyze a chart <ArrowRight className="transition-transform group-hover:translate-x-1" />
             </span>
           </Link>
 
           <Link
             to="/pulse"
-            className="group rounded-2xl border border-border bg-card/40 p-7 backdrop-blur transition hover:border-primary/50"
+            className="group bg-card p-7 transition hover:bg-accent/60 sm:p-9"
           >
-            <Radio className="h-6 w-6 text-primary" />
-            <div className="mt-4 text-xl font-semibold">ICT Pulse</div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              A live read on the session you're in right now — the active kill zone,
-              what to focus on, and upcoming red-folder news, updating in real time.
-            </p>
-            <span className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-primary">
-              Open ICT Pulse <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
+            <Radio className="h-6 w-6 text-signal" /><div className="mt-8 text-2xl font-semibold">ICT Pulse</div><p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">Stay oriented with the active session, time windows, weekly map, and high-impact news.</p><span className="mt-7 inline-flex items-center gap-2 text-sm font-medium text-primary">
+              Open live Pulse <ArrowRight className="transition-transform group-hover:translate-x-1" />
             </span>
           </Link>
-        </div>
-
-        <div className="mt-10">
-          <Link to="/auth">
-            <Button size="lg" className="gap-2">
-              Get started free <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        </div>
+          </div>
+        </section>
       </main>
     </div>
   );

@@ -8,6 +8,13 @@
       "when": 1791105849753,
       "tag": "0000_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791221150832,
+      "tag": "0001_create_saved_trade_ideas",
+      "breakpoints": true
     }
   ]
 }

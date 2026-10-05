@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Keep ICT Pulse's transcript-derived educational guide in a browser-safe typed module and live calendar fetching in a server function; this separates stable reference material from changing external data.
+- Persist generated trade plans as user-owned records linked to their source prediction; this keeps the personal workspace durable and auditable.
