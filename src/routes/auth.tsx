@@ -30,7 +30,7 @@ function AuthPage() {
   const [googleBusy, setGoogleBusy] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) navigate({ to: "/app" });
+    if (!loading && user) navigate({ to: "/dashboard" });
   }, [user, loading, navigate]);
 
   const submit = async (e: React.FormEvent) => {

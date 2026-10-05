@@ -192,6 +192,14 @@ Look at the attached charts and build the day-plan. Times in JSON must be UTC.`;
     const raw = json.choices?.[0]?.message?.content ?? "";
     try {
       const parsed = JSON.parse(raw);
+      const { error: saveError } = await context.supabase.from("trade_ideas").insert({
+        user_id: context.userId,
+        prediction_id: data.predictionId,
+        style: data.style,
+        plan: parsed,
+        news_count: news.length,
+      });
+      if (saveError) return { error: "Your plan was created but could not be saved.", result: null };
       return {
         error: null,
         result: parsed,
