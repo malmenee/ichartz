@@ -143,24 +143,6 @@ function AppPage() {
         return;
       }
 
-      const { error: insErr } = await supabase.from("predictions").insert({
-        user_id: user.id,
-        image_url: uploaded[0]?.url ?? null,
-        images: uploaded,
-        asset: result.asset,
-        prediction_long: result.long_term.prediction,
-        confidence_long: result.long_term.confidence,
-        reasoning_long: result.long_term.reasoning,
-        prediction_short: result.short_term.prediction,
-        confidence_short: result.short_term.confidence,
-        reasoning_short: result.short_term.reasoning,
-        prediction: result.long_term.prediction, // backward-compat
-        confidence: result.long_term.confidence,
-        reasoning: result.long_term.reasoning,
-        rules_applied: result.rules_applied,
-        ...(result.verification ?? {}),
-      });
-      if (insErr) throw insErr;
 
       toast.success(
         `Long: ${result.long_term.prediction} (${result.long_term.confidence}%) · Short: ${result.short_term.prediction} (${result.short_term.confidence}%)`,

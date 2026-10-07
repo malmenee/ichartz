@@ -22,6 +22,13 @@
       "when": 1791399373298,
       "tag": "0002_security_lockdown",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791399492266,
+      "tag": "0003_predictions_server_insert_only",
+      "breakpoints": true
     }
   ]
 }
