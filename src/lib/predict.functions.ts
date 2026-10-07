@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
 const TIMEFRAMES = ["1D", "4H", "1H", "15m", "1m"] as const;
@@ -47,27 +48,100 @@ const ImageSchema = z.object({
   url: z.string().url(),
 });
 
+export const FREE_DAILY_ANALYSES = 3;
+
+export function isOwnChartUrl(url: string, supabaseUrl: string, userId: string): boolean {
+  try {
+    const u = new URL(url);
+    const base = new URL(supabaseUrl);
+    if (u.protocol !== "https:" || u.host !== base.host) return false;
+    const prefixes = [
+      `/storage/v1/object/sign/charts/${userId}/`,
+      `/storage/v1/object/authenticated/charts/${userId}/`,
+    ];
+    const path = decodeURIComponent(u.pathname);
+    if (path.includes("..")) return false;
+    return prefixes.some((p) => path.startsWith(p));
+  } catch {
+    return false;
+  }
+}
+
 export const analyzeChart = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator(
     z.object({
       images: z.array(ImageSchema).min(1).max(5),
-      asset: z.string().optional(),
+      asset: z.string().max(40).optional(),
       pastFeedback: z
         .array(
           z.object({
-            prediction: z.string(),
-            outcome: z.string(),
-            reasoning: z.string().nullable(),
+            prediction: z.string().max(20),
+            outcome: z.string().max(20),
+            reasoning: z.string().max(2000).nullable(),
           }),
         )
+        .max(10)
         .optional(),
     }),
   )
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) {
       return { error: "Missing LOVABLE_API_KEY", result: null };
     }
+    const supabaseUrl = process.env.SUPABASE_URL ?? "";
+    if (!data.images.every((i) => isOwnChartUrl(i.url, supabaseUrl, context.userId))) {
+      return { error: "Images must be your own uploads to chart storage.", result: null };
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: ent } = await context.supabase
+      .from("entitlements")
+      .select("paid")
+      .eq("user_id", context.userId)
+      .eq("paid", true)
+      .limit(1);
+    const isPaid = (ent ?? []).length > 0;
+    let consumed = false;
+    if (!isPaid) {
+      const { data: used, error: qErr } = await supabaseAdmin.rpc("consume_analysis_quota", {
+        _user_id: context.userId,
+        _limit: FREE_DAILY_ANALYSES,
+      });
+      if (qErr) return { error: "Could not check your daily limit. Try again.", result: null };
+      if (used == null) {
+        return {
+          error: `Daily limit reached: free accounts get ${FREE_DAILY_ANALYSES} analyses per day. Try again tomorrow.`,
+          result: null,
+          limitReached: true,
+        };
+      }
+      consumed = true;
+    }
+    try {
+      const out = await runAnalysis(data, apiKey);
+      if (out.error && consumed) {
+        await supabaseAdmin.rpc("refund_analysis_quota", { _user_id: context.userId });
+      }
+      return out;
+    } catch (e) {
+      if (consumed) await supabaseAdmin.rpc("refund_analysis_quota", { _user_id: context.userId });
+      throw e;
+    }
+  });
+
+type AnalyzeInput = {
+  images: { timeframe: (typeof TIMEFRAMES)[number]; url: string }[];
+  asset?: string;
+  pastFeedback?: { prediction: string; outcome: string; reasoning: string | null }[];
+};
+
+async function runAnalysis(
+  data: AnalyzeInput,
+  apiKey: string,
+) {
+  {
 
     let learningContext = "";
     if (data.pastFeedback && data.pastFeedback.length > 0) {
@@ -221,4 +295,29 @@ export const analyzeChart = createServerFn({ method: "POST" })
         rules_applied: parsed.rules_applied ?? [],
       },
     };
+  }
+}
+
+/** Self-reported outcome for calls that can't be auto-verified. Server writes it with the service role. */
+export const recordOutcome = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(z.object({ id: z.string().uuid(), outcome: z.enum(["correct", "wrong"]) }))
+  .handler(async ({ data, context }) => {
+    const { data: row } = await context.supabase
+      .from("predictions")
+      .select("id, outcome, price_provider")
+      .eq("id", data.id)
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    if (!row) return { error: "Prediction not found." };
+    if (row.outcome) return { error: "Outcome already recorded." };
+    if (row.price_provider) return { error: "This call is graded automatically from live prices." };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("predictions")
+      .update({ outcome: data.outcome, resolved_at: new Date().toISOString() })
+      .eq("id", data.id)
+      .eq("user_id", context.userId)
+      .is("outcome", null);
+    return { error: error ? "Could not save outcome." : null };
   });

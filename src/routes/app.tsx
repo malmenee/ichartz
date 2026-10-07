@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { analyzeChart } from "@/lib/predict.functions";
+import { analyzeChart, recordOutcome } from "@/lib/predict.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -49,6 +49,7 @@ function AppPage() {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const analyze = useServerFn(analyzeChart);
+  const saveOutcome = useServerFn(recordOutcome);
 
   const [files, setFiles] = useState<Record<TF, File | null>>({
     "1D": null,
@@ -176,11 +177,8 @@ function AppPage() {
   };
 
   const setOutcome = async (id: string, outcome: "correct" | "wrong") => {
-    const { error } = await supabase
-      .from("predictions")
-      .update({ outcome, resolved_at: new Date().toISOString() })
-      .eq("id", id);
-    if (error) toast.error(error.message);
+    const { error } = await saveOutcome({ data: { id, outcome } });
+    if (error) toast.error(error);
     else {
       toast.success("Outcome recorded — AI will learn from it.");
       loadHistory();
