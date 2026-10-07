@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
 const TIMEFRAMES = ["1D", "4H", "1H", "15m", "1m"] as const;
@@ -119,7 +120,7 @@ export const analyzeChart = createServerFn({ method: "POST" })
       consumed = true;
     }
     try {
-      const out = await runAnalysis(data, apiKey, supabaseAdmin);
+      const out = await runAnalysis(data, apiKey);
       if (out.error && consumed) {
         await supabaseAdmin.rpc("refund_analysis_quota", { _user_id: context.userId });
       }
@@ -139,8 +140,6 @@ type AnalyzeInput = {
 async function runAnalysis(
   data: AnalyzeInput,
   apiKey: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  supabaseAdmin: any,
 ) {
   {
 
@@ -296,4 +295,5 @@ async function runAnalysis(
         rules_applied: parsed.rules_applied ?? [],
       },
     };
-  });
+  }
+}
