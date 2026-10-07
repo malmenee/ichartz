@@ -121,8 +121,31 @@ export const analyzeChart = createServerFn({ method: "POST" })
     }
     try {
       const out = await runAnalysis(data, apiKey);
-      if (out.error && consumed) {
-        await supabaseAdmin.rpc("refund_analysis_quota", { _user_id: context.userId });
+      if (out.error || !out.result) {
+        if (consumed) await supabaseAdmin.rpc("refund_analysis_quota", { _user_id: context.userId });
+        return out;
+      }
+      const r = out.result;
+      const { error: insErr } = await supabaseAdmin.from("predictions").insert({
+        user_id: context.userId,
+        image_url: data.images[0]?.url ?? null,
+        images: data.images,
+        asset: r.asset,
+        prediction_long: r.long_term.prediction,
+        confidence_long: r.long_term.confidence,
+        reasoning_long: r.long_term.reasoning,
+        prediction_short: r.short_term.prediction,
+        confidence_short: r.short_term.confidence,
+        reasoning_short: r.short_term.reasoning,
+        prediction: r.long_term.prediction,
+        confidence: r.long_term.confidence,
+        reasoning: r.long_term.reasoning,
+        rules_applied: r.rules_applied,
+        ...(r.verification ?? {}),
+      });
+      if (insErr) {
+        if (consumed) await supabaseAdmin.rpc("refund_analysis_quota", { _user_id: context.userId });
+        return { error: "Could not save your prediction. Try again.", result: null };
       }
       return out;
     } catch (e) {
