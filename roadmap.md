@@ -1,6 +1,5 @@
-- [x] Bring theapp's daily/weekly maps, timing, seasonal notes, news playbook, and transcript guide into ICT Pulse.
-- [x] Make the live news panel and current guidance work together with refresh and failure states.
-- [x] Verify ICT Pulse on desktop and mobile, including news and expanded guides.
-- [x] Restyle the landing page using the selected kinetic dark-glass direction.
-- [x] Build a signed-in personal workspace for recent saved chart uploads and ideas.
-- [x] Persist generated trade ideas and verify the signed-in workspace end to end.
+- [x] Earlier: ICT Pulse guide, landing redesign, workspace, security lockdown.
+- [ ] Credits: balances + ledger, 1 credit per analysis / trade idea, refund on failure, balance in header.
+- [ ] Stripe: $9/mo ICT Pulse subscription + 10/30/100 credit packs, verified idempotent webhook, pricing page, manage billing, tax.
+- [ ] Gate Pulse: premium sections behind subscription, checked on the server, upgrade card.
+- [ ] Legal: /terms /privacy /risk, footer with contact email, risk disclaimer under results and signup, landing copy changes.
