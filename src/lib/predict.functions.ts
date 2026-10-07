@@ -297,3 +297,27 @@ async function runAnalysis(
     };
   }
 }
+
+/** Self-reported outcome for calls that can't be auto-verified. Server writes it with the service role. */
+export const recordOutcome = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(z.object({ id: z.string().uuid(), outcome: z.enum(["correct", "wrong"]) }))
+  .handler(async ({ data, context }) => {
+    const { data: row } = await context.supabase
+      .from("predictions")
+      .select("id, outcome, price_provider")
+      .eq("id", data.id)
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    if (!row) return { error: "Prediction not found." };
+    if (row.outcome) return { error: "Outcome already recorded." };
+    if (row.price_provider) return { error: "This call is graded automatically from live prices." };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("predictions")
+      .update({ outcome: data.outcome, resolved_at: new Date().toISOString() })
+      .eq("id", data.id)
+      .eq("user_id", context.userId)
+      .is("outcome", null);
+    return { error: error ? "Could not save outcome." : null };
+  });
