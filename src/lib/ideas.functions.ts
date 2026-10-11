@@ -112,7 +112,20 @@ export const getTradeIdeas = createServerFn({ method: "POST" })
       return { error: "No chart images on this prediction", result: null };
     }
 
-    const asset = pred.asset ?? "Unknown";
+    const { spendCredit, refundCredit, NO_CREDITS_ERROR } = await import("./credits.server");
+    const remaining = await spendCredit(context.userId, "trade idea");
+    if (remaining == null) return { error: NO_CREDITS_ERROR, result: null };
+    try {
+      const out = await buildIdea();
+      if (out.error) await refundCredit(context.userId, "trade idea failed");
+      return out;
+    } catch (e) {
+      await refundCredit(context.userId, "trade idea failed");
+      throw e;
+    }
+
+    async function buildIdea() {
+    const asset = pred!.asset ?? "Unknown";
     const allNews = await fetchRedFolderNews();
     const news = filterNewsForAsset(allNews, asset);
     const newsBlock = news.length
@@ -213,5 +226,6 @@ Look at the attached charts and build the day-plan. Times in JSON must be UTC.`;
       };
     } catch {
       return { error: "AI returned invalid JSON.", result: null };
+    }
     }
   });

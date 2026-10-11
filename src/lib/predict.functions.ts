@@ -48,7 +48,6 @@ const ImageSchema = z.object({
   url: z.string().url(),
 });
 
-export const FREE_DAILY_ANALYSES = 3;
 
 export function isOwnChartUrl(url: string, supabaseUrl: string, userId: string): boolean {
   try {
@@ -96,33 +95,14 @@ export const analyzeChart = createServerFn({ method: "POST" })
     }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: ent } = await context.supabase
-      .from("entitlements")
-      .select("paid")
-      .eq("user_id", context.userId)
-      .eq("paid", true)
-      .limit(1);
-    const isPaid = (ent ?? []).length > 0;
-    let consumed = false;
-    if (!isPaid) {
-      const { data: used, error: qErr } = await supabaseAdmin.rpc("consume_analysis_quota", {
-        _user_id: context.userId,
-        _limit: FREE_DAILY_ANALYSES,
-      });
-      if (qErr) return { error: "Could not check your daily limit. Try again.", result: null };
-      if (used == null) {
-        return {
-          error: `Daily limit reached: free accounts get ${FREE_DAILY_ANALYSES} analyses per day. Try again tomorrow.`,
-          result: null,
-          limitReached: true,
-        };
-      }
-      consumed = true;
-    }
+    const { spendCredit, refundCredit, NO_CREDITS_ERROR } = await import("./credits.server");
+    const remaining = await spendCredit(context.userId, "chart analysis");
+    if (remaining == null) return { error: NO_CREDITS_ERROR, result: null, noCredits: true };
+    const refund = () => refundCredit(context.userId, "chart analysis failed");
     try {
       const out = await runAnalysis(data, apiKey);
       if (out.error || !out.result) {
-        if (consumed) await supabaseAdmin.rpc("refund_analysis_quota", { _user_id: context.userId });
+        await refund();
         return out;
       }
       const r = out.result;
@@ -144,12 +124,12 @@ export const analyzeChart = createServerFn({ method: "POST" })
         ...(r.verification ?? {}),
       });
       if (insErr) {
-        if (consumed) await supabaseAdmin.rpc("refund_analysis_quota", { _user_id: context.userId });
+        await refund();
         return { error: "Could not save your prediction. Try again.", result: null };
       }
       return out;
     } catch (e) {
-      if (consumed) await supabaseAdmin.rpc("refund_analysis_quota", { _user_id: context.userId });
+      await refund();
       throw e;
     }
   });
