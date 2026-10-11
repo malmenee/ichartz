@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IdeasRouteImport } from './routes/ideas'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PulseRouteImport } from './routes/pulse'
 import { Route as ApiPublicResolvePredictionsRouteImport } from './routes/api/public/resolve-predictions'
 
@@ -42,6 +43,11 @@ const IdeasRoute = IdeasRouteImport.update({
   path: '/ideas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PulseRoute = PulseRouteImport.update({
   id: '/pulse',
   path: '/pulse',
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
   '/ideas': typeof IdeasRoute
+  '/pricing': typeof PricingRoute
   '/pulse': typeof PulseRoute
   '/api/public/resolve-predictions': typeof ApiPublicResolvePredictionsRoute
 }
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
   '/ideas': typeof IdeasRoute
+  '/pricing': typeof PricingRoute
   '/pulse': typeof PulseRoute
   '/api/public/resolve-predictions': typeof ApiPublicResolvePredictionsRoute
 }
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRoute
   '/ideas': typeof IdeasRoute
+  '/pricing': typeof PricingRoute
   '/pulse': typeof PulseRoute
   '/api/public/resolve-predictions': typeof ApiPublicResolvePredictionsRoute
 }
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/ideas'
+    | '/pricing'
     | '/pulse'
     | '/api/public/resolve-predictions'
   fileRoutesByTo: FileRoutesByTo
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/ideas'
+    | '/pricing'
     | '/pulse'
     | '/api/public/resolve-predictions'
   id:
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/ideas'
+    | '/pricing'
     | '/pulse'
     | '/api/public/resolve-predictions'
   fileRoutesById: FileRoutesById
@@ -118,6 +130,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   DashboardRoute: typeof DashboardRoute
   IdeasRoute: typeof IdeasRoute
+  PricingRoute: typeof PricingRoute
   PulseRoute: typeof PulseRoute
   ApiPublicResolvePredictionsRoute: typeof ApiPublicResolvePredictionsRoute
 }
@@ -159,6 +172,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IdeasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pulse': {
       id: '/pulse'
       path: '/pulse'
@@ -182,6 +202,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   DashboardRoute: DashboardRoute,
   IdeasRoute: IdeasRoute,
+  PricingRoute: PricingRoute,
   PulseRoute: PulseRoute,
   ApiPublicResolvePredictionsRoute: ApiPublicResolvePredictionsRoute,
 }
