@@ -1,3 +1,4 @@
+import { CreditBadge, notifyCreditsChanged } from "@/components/CreditBadge";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
@@ -154,6 +155,7 @@ function AppPage() {
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed");
     } finally {
+      notifyCreditsChanged();
       setAnalyzing(false);
     }
   };
@@ -199,6 +201,7 @@ function AppPage() {
                 <Sparkles className="h-4 w-4 text-yellow-500" /> Premium Ideas
               </Button>
             </Link>
+            <CreditBadge />
             <span className="hidden text-sm text-muted-foreground sm:inline">
               {user.email}
             </span>

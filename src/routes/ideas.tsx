@@ -1,3 +1,4 @@
+import { CreditBadge, notifyCreditsChanged } from "@/components/CreditBadge";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -126,6 +127,7 @@ function IdeasPage() {
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed");
     } finally {
+      notifyCreditsChanged();
       setBusy(false);
     }
   };
@@ -153,11 +155,14 @@ function IdeasPage() {
             <LineChart className="h-5 w-5 text-primary" />
             ChartSeer
           </Link>
+          <div className="flex items-center gap-2">
+          <CreditBadge />
           <Link to="/app">
             <Button variant="ghost" size="sm" className="gap-2">
               <ArrowLeft className="h-4 w-4" /> Back to analysis
             </Button>
           </Link>
+          </div>
         </div>
       </header>
 

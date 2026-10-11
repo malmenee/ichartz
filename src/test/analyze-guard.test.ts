@@ -1,13 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { FREE_DAILY_ANALYSES, isOwnChartUrl } from "@/lib/predict.functions";
+import { isOwnChartUrl } from "@/lib/predict.functions";
 
 const BASE = "https://abc.supabase.co";
 const USER = "11111111-1111-1111-1111-111111111111";
 
 describe("analyzeChart guards", () => {
-  it("free users get 3 analyses per day", () => {
-    expect(FREE_DAILY_ANALYSES).toBe(3);
-  });
   it("accepts the user's own signed chart URL", () => {
     expect(isOwnChartUrl(`${BASE}/storage/v1/object/sign/charts/${USER}/a.png?token=x`, BASE, USER)).toBe(true);
   });

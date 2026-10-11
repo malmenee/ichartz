@@ -112,7 +112,21 @@ export const getTradeIdeas = createServerFn({ method: "POST" })
       return { error: "No chart images on this prediction", result: null };
     }
 
-    const asset = pred.asset ?? "Unknown";
+    const { spendCredit, refundCredit, NO_CREDITS_ERROR } = await import("./credits.server");
+    const remaining = await spendCredit(context.userId, "trade idea");
+    if (remaining == null) return { error: NO_CREDITS_ERROR, result: null };
+    try {
+      const out = await buildIdea();
+      if (out.error) await refundCredit(context.userId, "trade idea failed");
+      return out;
+    } catch (e) {
+      await refundCredit(context.userId, "trade idea failed");
+      throw e;
+    }
+
+    async function buildIdea() {
+    const p = pred!;
+    const asset = pred!.asset ?? "Unknown";
     const allNews = await fetchRedFolderNews();
     const news = filterNewsForAsset(allNews, asset);
     const newsBlock = news.length
@@ -124,12 +138,12 @@ export const getTradeIdeas = createServerFn({ method: "POST" })
           .join("\n")
       : `No high-impact events in the next 48h that directly affect ${asset}.`;
 
-    const longP = pred.prediction_long ?? pred.prediction ?? "?";
-    const longC = pred.confidence_long ?? pred.confidence ?? 0;
-    const longR = pred.reasoning_long ?? pred.reasoning ?? "";
-    const shortP = pred.prediction_short ?? "?";
-    const shortC = pred.confidence_short ?? 0;
-    const shortR = pred.reasoning_short ?? "";
+    const longP = p.prediction_long ?? p.prediction ?? "?";
+    const longC = p.confidence_long ?? p.confidence ?? 0;
+    const longR = p.reasoning_long ?? p.reasoning ?? "";
+    const shortP = p.prediction_short ?? "?";
+    const shortC = p.confidence_short ?? 0;
+    const shortR = p.reasoning_short ?? "";
     const tfs = images.map((i) => i.timeframe).join(", ");
 
     const userText = `Asset: ${asset}
@@ -213,5 +227,6 @@ Look at the attached charts and build the day-plan. Times in JSON must be UTC.`;
       };
     } catch {
       return { error: "AI returned invalid JSON.", result: null };
+    }
     }
   });

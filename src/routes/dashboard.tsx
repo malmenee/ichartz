@@ -1,3 +1,4 @@
+import { CreditBadge } from "@/components/CreditBadge";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -98,6 +99,7 @@ function DashboardPage() {
             <Link to="/app"><Button size="sm" variant="ghost">ChartSeer</Button></Link>
             <Link to="/pulse"><Button size="sm" variant="ghost">ICT Pulse</Button></Link>
           </nav>
+          <CreditBadge />
           <Button variant="ghost" size="sm" onClick={signOut} aria-label="Sign out"><LogOut /></Button>
         </div>
       </header>
