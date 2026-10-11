@@ -83,26 +83,44 @@ export type Database = {
       entitlements: {
         Row: {
           created_at: string
+          current_period_end: string | null
           id: string
           paid: boolean
           paid_at: string | null
+          product: string
+          stripe_customer_id: string | null
           stripe_session_id: string | null
+          stripe_subscription_id: string | null
+          subscription_status: string | null
+          updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          current_period_end?: string | null
           id?: string
           paid?: boolean
           paid_at?: string | null
+          product?: string
+          stripe_customer_id?: string | null
           stripe_session_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_status?: string | null
+          updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
+          current_period_end?: string | null
           id?: string
           paid?: boolean
           paid_at?: string | null
+          product?: string
+          stripe_customer_id?: string | null
           stripe_session_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_status?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -188,6 +206,24 @@ export type Database = {
           rules_applied?: Json | null
           timeframe?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      stripe_events: {
+        Row: {
+          id: string
+          processed_at: string
+          type: string
+        }
+        Insert: {
+          id: string
+          processed_at?: string
+          type: string
+        }
+        Update: {
+          id?: string
+          processed_at?: string
+          type?: string
         }
         Relationships: []
       }
