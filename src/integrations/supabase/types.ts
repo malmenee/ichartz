@@ -35,6 +35,51 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_balances: {
+        Row: {
+          credits: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          credits?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          credits?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      credit_ledger: {
+        Row: {
+          created_at: string
+          delta: number
+          id: string
+          reason: string
+          stripe_event_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delta: number
+          id?: string
+          reason: string
+          stripe_event_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          delta?: number
+          id?: string
+          reason?: string
+          stripe_event_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       entitlements: {
         Row: {
           created_at: string
@@ -189,6 +234,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_credits: {
+        Args: {
+          _delta: number
+          _event_id?: string
+          _reason: string
+          _user_id: string
+        }
+        Returns: number
+      }
       consume_analysis_quota: {
         Args: { _limit: number; _user_id: string }
         Returns: number
@@ -204,6 +258,10 @@ export type Database = {
         }[]
       }
       refund_analysis_quota: { Args: { _user_id: string }; Returns: undefined }
+      spend_credit: {
+        Args: { _reason: string; _user_id: string }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
