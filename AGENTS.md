@@ -11,3 +11,5 @@
 
 - Keep ICT Pulse's transcript-derived educational guide in a browser-safe typed module and live calendar fetching in a server function; this separates stable reference material from changing external data.
 - Persist generated trade plans as user-owned records linked to their source prediction; this keeps the personal workspace durable and auditable.
+- Credits are changed only through service-role SQL functions (spend_credit / add_credits) with a ledger row per change; this keeps balances atomic and auditable and makes Stripe top-ups idempotent by event ID.
+- Premium ICT Pulse content lives in a server-only module returned by an entitlement-checked server function; gating in the UI alone would still ship the content to everyone.
