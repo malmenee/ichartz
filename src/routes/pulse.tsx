@@ -33,7 +33,7 @@ type PulseNews = { events: GuideNewsEvent[]; fetchedAt: string | null; error: st
 export const Route = createFileRoute("/pulse")({
   head: () => ({ meta: [
     { title: "ICT Pulse — iChart" },
-    { name: "description", content: "A live Eastern Time trading-day guide with session windows, weekly and daily maps, high-impact news and ICT transcript notes." },
+    { name: "description", content: "A live Eastern Time trading-day guide with session windows, weekly and daily maps, high-impact news and original ICT concept guides." },
     { property: "og:title", content: "ICT Pulse — iChart" },
     { property: "og:description", content: "Explore today's market timing, economic calendar and original guides on commonly taught session and market-structure concepts." },
     { property: "og:type", content: "website" },
