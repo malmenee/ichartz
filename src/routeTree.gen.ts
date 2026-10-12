@@ -15,7 +15,10 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IdeasRouteImport } from './routes/ideas'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PulseRouteImport } from './routes/pulse'
+import { Route as RiskRouteImport } from './routes/risk'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiPublicResolvePredictionsRouteImport } from './routes/api/public/resolve-predictions'
 
 const IndexRoute = IndexRouteImport.update({
@@ -48,9 +51,24 @@ const PricingRoute = PricingRouteImport.update({
   path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PulseRoute = PulseRouteImport.update({
   id: '/pulse',
   path: '/pulse',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RiskRoute = RiskRouteImport.update({
+  id: '/risk',
+  path: '/risk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicResolvePredictionsRoute =
@@ -67,7 +85,10 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/ideas': typeof IdeasRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/pulse': typeof PulseRoute
+  '/risk': typeof RiskRoute
+  '/terms': typeof TermsRoute
   '/api/public/resolve-predictions': typeof ApiPublicResolvePredictionsRoute
 }
 export interface FileRoutesByTo {
@@ -77,7 +98,10 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/ideas': typeof IdeasRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/pulse': typeof PulseRoute
+  '/risk': typeof RiskRoute
+  '/terms': typeof TermsRoute
   '/api/public/resolve-predictions': typeof ApiPublicResolvePredictionsRoute
 }
 export interface FileRoutesById {
@@ -88,7 +112,10 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/ideas': typeof IdeasRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/pulse': typeof PulseRoute
+  '/risk': typeof RiskRoute
+  '/terms': typeof TermsRoute
   '/api/public/resolve-predictions': typeof ApiPublicResolvePredictionsRoute
 }
 export interface FileRouteTypes {
@@ -100,7 +127,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/ideas'
     | '/pricing'
+    | '/privacy'
     | '/pulse'
+    | '/risk'
+    | '/terms'
     | '/api/public/resolve-predictions'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -110,7 +140,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/ideas'
     | '/pricing'
+    | '/privacy'
     | '/pulse'
+    | '/risk'
+    | '/terms'
     | '/api/public/resolve-predictions'
   id:
     | '__root__'
@@ -120,7 +153,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/ideas'
     | '/pricing'
+    | '/privacy'
     | '/pulse'
+    | '/risk'
+    | '/terms'
     | '/api/public/resolve-predictions'
   fileRoutesById: FileRoutesById
 }
@@ -131,7 +167,10 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   IdeasRoute: typeof IdeasRoute
   PricingRoute: typeof PricingRoute
+  PrivacyRoute: typeof PrivacyRoute
   PulseRoute: typeof PulseRoute
+  RiskRoute: typeof RiskRoute
+  TermsRoute: typeof TermsRoute
   ApiPublicResolvePredictionsRoute: typeof ApiPublicResolvePredictionsRoute
 }
 
@@ -179,11 +218,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pulse': {
       id: '/pulse'
       path: '/pulse'
       fullPath: '/pulse'
       preLoaderRoute: typeof PulseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/risk': {
+      id: '/risk'
+      path: '/risk'
+      fullPath: '/risk'
+      preLoaderRoute: typeof RiskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/resolve-predictions': {
@@ -203,7 +263,10 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   IdeasRoute: IdeasRoute,
   PricingRoute: PricingRoute,
+  PrivacyRoute: PrivacyRoute,
   PulseRoute: PulseRoute,
+  RiskRoute: RiskRoute,
+  TermsRoute: TermsRoute,
   ApiPublicResolvePredictionsRoute: ApiPublicResolvePredictionsRoute,
 }
 export const routeTree = rootRouteImport

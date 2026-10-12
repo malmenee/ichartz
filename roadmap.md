@@ -1,5 +1,5 @@
 - [x] Earlier: ICT Pulse guide, landing redesign, workspace, security lockdown.
-- [ ] Credits: balances + ledger, 1 credit per analysis / trade idea, refund on failure, balance in header.
-- [ ] Stripe: $9/mo ICT Pulse subscription + 10/30/100 credit packs, verified idempotent webhook, pricing page, manage billing, tax.
-- [ ] Gate Pulse: premium sections behind subscription, checked on the server, upgrade card.
-- [ ] Legal: /terms /privacy /risk, footer with contact email, risk disclaimer under results and signup, landing copy changes.
+- [x] Credits: balances + ledger, 1 credit per analysis / trade idea, refund on failure, balance in header.
+- [ ] Stripe: $9/mo ICT Pulse subscription + 10/30/100 credit packs, verified idempotent webhook, manage billing, tax. BLOCKED: workspace is on the Free plan; built-in payments need Pro. (Pricing page + database fields ready.)
+- [x] Gate Pulse: premium sections behind subscription, checked on the server, upgrade card.
+- [x] Legal: /terms /privacy /risk, footer with contact email, risk disclaimer under results and signup, landing copy changes.

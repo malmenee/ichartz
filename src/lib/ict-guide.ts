@@ -1,11 +1,11 @@
-// ICT Trading Day — data extracted from the 639-transcript field guide.
+// ICT Trading Day — original guides on commonly taught session and market-structure concepts.
 // All times are Eastern Time (ET) / New York local time.
 
 export const CORRELATION = {
-  STRONG: { label: "STRONG", stars: "★★★", note: "35%+ of 639 videos — core, everyday habit" },
-  MODERATE: { label: "MODERATE", stars: "★★", note: "12–35% of 639 videos — recurring tool" },
-  NOTED: { label: "NOTED", stars: "★", note: "3–12% of 639 videos — situational / advanced" },
-  RARE: { label: "RARE", stars: "·", note: "under 3% of 639 videos — mentioned, not a pillar" },
+  STRONG: { label: "STRONG", stars: "★★★", note: "Core, everyday concept" },
+  MODERATE: { label: "MODERATE", stars: "★★", note: "Recurring tool" },
+  NOTED: { label: "NOTED", stars: "★", note: "Situational / advanced" },
+  RARE: { label: "RARE", stars: "·", note: "Mentioned, not a pillar" },
 };
 
 export const DAYS = {
@@ -220,7 +220,7 @@ export const SEASONS = [
   },
   {
     key: "spring", name: "Spring", months: ["March", "April", "May"],
-    note: "No month-specific edge appears in the 639-transcript archive for index futures. Rely on day-of-week and time-of-day; treat the season as neutral.",
+    note: "No month-specific edge is commonly taught for index futures. Rely on day-of-week and time-of-day; treat the season as neutral.",
     corr: CORRELATION.RARE, caveat: "No archive support for a spring seasonal rule.",
   },
   {
@@ -304,7 +304,7 @@ export const NEWS_PLAYBOOK = [
 ];
 
 export const SOURCE_NOTE =
-  "Built from 639 parsed ICT video transcripts (session reviews, mentorship lectures, and forex / futures price-action lessons). Correlation counts reflect explicit term / time-stamp matches across that transcript set — not ICT's full body of work, and not a guarantee of future market behavior.";
+  "ICT Pulse contains original guides on commonly taught session and market-structure concepts. Strength labels describe how central a concept is in common teaching, not a guarantee of future market behavior.";
 
 export type GuideNewsEvent = { title: string; country?: string; currency: string; date: string; time: string; impact: string; forecast?: string; previous?: string; actual?: string; isoDate?: string };
 
