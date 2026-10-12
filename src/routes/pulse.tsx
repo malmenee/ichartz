@@ -35,7 +35,7 @@ export const Route = createFileRoute("/pulse")({
     { title: "ICT Pulse — iChart" },
     { name: "description", content: "A live Eastern Time trading-day guide with session windows, weekly and daily maps, high-impact news and ICT transcript notes." },
     { property: "og:title", content: "ICT Pulse — iChart" },
-    { property: "og:description", content: "Explore today's market timing, economic calendar and transcript-based ICT field guide." },
+    { property: "og:description", content: "Explore today's market timing, economic calendar and original guides on commonly taught session and market-structure concepts." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ] }),
@@ -118,7 +118,7 @@ function PulsePage() {
 
       <div className="grid gap-x-8 lg:grid-cols-3">
         <section className={panel}><div className={`${label} justify-between`}><span className="flex items-center gap-2"><CalendarDays className="size-4" /> Season</span><Correlation corr={season.corr} /></div><h2 className="mt-3 text-xl font-semibold">{season.name} <span className="text-sm font-normal text-muted-foreground">/ {et.month}</span></h2><p className={`mt-2 ${muted}`}>{season.note}</p><p className="mt-2 text-xs italic text-muted-foreground">{season.caveat}</p></section>
-        <section className={panel}><div className={`${label} justify-between`}><span className="flex items-center gap-2"><CalendarRange className="size-4" /> Day of week</span><Correlation corr={day.corr} /></div><h2 className="mt-3 text-xl font-semibold">{day.name} <span className="text-xs font-normal text-muted-foreground">{day.mentions} mentions</span></h2><p className={`mt-2 ${muted}`}>{day.role}</p><ul className="mt-3 space-y-2 text-xs leading-relaxed text-muted-foreground">{day.lookFor.map((item) => <li key={item} className="border-l-2 border-border pl-3">{item}</li>)}</ul></section>
+        <section className={panel}><div className={`${label} justify-between`}><span className="flex items-center gap-2"><CalendarRange className="size-4" /> Day of week</span><Correlation corr={day.corr} /></div><h2 className="mt-3 text-xl font-semibold">{day.name}</h2><p className={`mt-2 ${muted}`}>{day.role}</p><ul className="mt-3 space-y-2 text-xs leading-relaxed text-muted-foreground">{day.lookFor.map((item) => <li key={item} className="border-l-2 border-border pl-3">{item}</li>)}</ul></section>
         <section className={panel}><div className={`${label} justify-between`}><span className="flex items-center gap-2"><Clock3 className="size-4" /> Time of day</span><Correlation corr={windowNow.corr} /></div><h2 className="mt-3 text-xl font-semibold">{windowNow.name}</h2><p className="mt-1 text-xs text-muted-foreground">{windowNow.time} ET</p><p className={`mt-2 ${muted}`}>{windowNow.summary}</p><div className="mt-5 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full bg-chart-2 transition-[width] duration-1000" style={{ width: `${et.minutesOfDay / 14.4}%` }} /></div><div className="mt-1 flex justify-between text-[10px] text-muted-foreground"><span>12 AM</span><span>6 AM</span><span>12 PM</span><span>6 PM</span><span>12 AM</span></div><p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><Timer className="size-4 shrink-0" /> Next: <span className="font-medium text-foreground">{nextWindow.name}</span> · {Math.floor(minutesUntil / 60)}h {minutesUntil % 60}m</p></section>
       </div>
 
