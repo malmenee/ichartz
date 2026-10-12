@@ -1,3 +1,4 @@
+import { SiteFooter } from "@/components/legal";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   type ErrorComponentProps,
@@ -103,6 +104,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Outlet />
+        <SiteFooter />
         <Toaster richColors position="top-right" />
       </AuthProvider>
     </QueryClientProvider>

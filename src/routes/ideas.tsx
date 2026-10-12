@@ -1,3 +1,4 @@
+import { RiskNote } from "@/components/legal";
 import { CreditBadge, notifyCreditsChanged } from "@/components/CreditBadge";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -281,6 +282,7 @@ function IdeasPage() {
           </Card>
         )}
 
+        {plan && <RiskNote className="mt-6" />}
         {plan && (
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
             <Card className="p-6">

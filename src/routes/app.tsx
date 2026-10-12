@@ -1,3 +1,4 @@
+import { RiskNote } from "@/components/legal";
 import { CreditBadge, notifyCreditsChanged } from "@/components/CreditBadge";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -490,6 +491,7 @@ function PredictionCard({
         )}
       </div>
 
+      <RiskNote className="mt-3" />
       <Link
         to="/ideas"
         search={{ prediction: p.id }}

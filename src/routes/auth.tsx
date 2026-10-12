@@ -1,3 +1,4 @@
+import { RiskNote } from "@/components/legal";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
@@ -89,6 +90,12 @@ function AuthPage() {
         >
           {mode === "signin" ? "No account? Sign up" : "Have an account? Sign in"}
         </button>
+        {mode === "signup" && (
+          <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
+            By signing up you agree to the <Link to="/terms" className="underline">Terms</Link> and <Link to="/privacy" className="underline">Privacy Policy</Link>.
+          </p>
+        )}
+        <RiskNote className="mt-3" />
       </Card>
     </div>
   );
