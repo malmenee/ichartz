@@ -339,7 +339,9 @@ export function getWindowForMinutes(mins: number) {
 }
 
 export function getSeasonForMonth(monthName: string) {
-  return SEASONS.find((s) => s.months.includes(monthName)) || SEASONS[1];
+  const idx = ["January","February","March","April","May","June","July","August","September","October","November","December"].indexOf(monthName);
+  const key = ["winter","winter","spring","spring","spring","summer","summer","summer","fall","fall","fall","winter"][idx < 0 ? 0 : idx];
+  return SEASONS.find((s) => s.key === key)!;
 }
 
 export function getDay(weekdayKey: string) {
