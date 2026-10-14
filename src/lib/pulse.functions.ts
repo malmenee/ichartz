@@ -48,3 +48,11 @@ export const getPulse = createServerFn({ method: "GET" })
       return newsCache ? { ...newsCache, stale: true, error: message } : { events: [], fetchedAt: null, stale: false, error: message };
     }
   });
+
+/** Shared kill-zone / day / season / news-window context for the Pulse page. */
+export const getPulseContextFn = createServerFn({ method: "GET" })
+  .inputValidator((input: { asset?: string } | undefined) => ({ asset: (input?.asset ?? "NQ").slice(0, 20) }))
+  .handler(async ({ data }) => {
+    const { getPulseContext } = await import("./pulse-context.server");
+    return getPulseContext(new Date(), data.asset);
+  });
