@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
-import { fetchRedFolderNews as fetchRedFolderNewsShared, type FFEvent } from "./news-calendar.server";
 
 const SYSTEM_PROMPT = `
 You are an elite intraday price-action strategist. The user has already run a
@@ -16,6 +15,11 @@ Also, you are given the ACTUAL chart images. Read them again for fresh levels.
 
 Produce a DAY-PLAN that is fully consistent with the prior bias unless the
 charts clearly contradict it (then explain the conflict and lower confidence).
+
+You are also given ICT PULSE CONTEXT: defined kill zones (ET), the day-of-week
+behaviour, the season and red-folder news windows. Every trade idea MUST name
+one defined kill zone, give a window_et fully inside it, and avoid every news
+window (no entries within 15 minutes of a red-folder event).
 
 You MUST factor in the red-folder news:
 - Avoid entries in the ~15 min window around each red event.
@@ -42,7 +46,11 @@ Return STRICT JSON ONLY (no markdown), shape:
       "invalidation": "<price/condition>",
       "targets": ["<t1>", "<t2>"],
       "confidence": <0-100>,
-      "rationale": "<2-3 sentences tying PA + news + prior bias>"
+      "rationale": "<2-3 sentences tying PA + news + prior bias>",
+      "kill_zone": "<exact name of one defined kill zone>",
+      "window_et": "HH:MM-HH:MM (Eastern Time, must sit inside that kill zone)",
+      "entry_conditions": ["<condition 1>", "<condition 2>"],
+      "stand_aside_when": ["<condition 1>", "<condition 2>"]
     }
   ],
   "news_watch": [
@@ -51,36 +59,6 @@ Return STRICT JSON ONLY (no markdown), shape:
   "risk_notes": "<1-2 sentences>"
 }
 `.trim();
-
-const fetchRedFolderNews = () => fetchRedFolderNewsShared(48);
-
-// Map an asset string to the currency codes whose red-folder news actually moves it.
-function currenciesForAsset(assetRaw: string): string[] {
-  const a = (assetRaw || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
-  if (!a) return [];
-
-  if (/(XAU|GOLD)/.test(a)) return ["USD"];
-  if (/(XAG|SILVER)/.test(a)) return ["USD"];
-  if (/(WTI|BRENT|USOIL|UKOIL|OIL|CL)/.test(a)) return ["USD"];
-  if (/(BTC|ETH|SOL|XRP|DOGE|BNB|ADA|USDT|USDC)/.test(a)) return ["USD"];
-  if (/(SPX|SP500|ES|NAS|NDX|NQ|DJI|US30|US100|US500|RUT)/.test(a))
-    return ["USD"];
-  if (/(DAX|GER40|GER30)/.test(a)) return ["EUR"];
-  if (/(FTSE|UK100|UK)/.test(a)) return ["GBP"];
-  if (/(NIKKEI|JP225|N225)/.test(a)) return ["JPY"];
-  if (/(HSI|HK50)/.test(a)) return ["CNY", "HKD"];
-  if (/(ASX|AUS200)/.test(a)) return ["AUD"];
-
-  const codes = ["USD", "EUR", "GBP", "JPY", "AUD", "NZD", "CAD", "CHF", "CNY"];
-  const found = codes.filter((c) => a.includes(c));
-  return found;
-}
-
-function filterNewsForAsset(events: FFEvent[], asset: string): FFEvent[] {
-  const ccys = currenciesForAsset(asset);
-  if (ccys.length === 0) return [];
-  return events.filter((e) => ccys.includes((e.country || "").toUpperCase()));
-}
 
 export const getTradeIdeas = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -127,16 +105,10 @@ export const getTradeIdeas = createServerFn({ method: "POST" })
     async function buildIdea() {
     const p = pred!;
     const asset = pred!.asset ?? "Unknown";
-    const allNews = await fetchRedFolderNews();
-    const news = filterNewsForAsset(allNews, asset);
-    const newsBlock = news.length
-      ? news
-          .map(
-            (e) =>
-              `- ${e.date} [${e.country}] ${e.title} (impact: ${e.impact}${e.forecast ? `, forecast ${e.forecast}` : ""}${e.previous ? `, prev ${e.previous}` : ""})`,
-          )
-          .join("\n")
-      : `No high-impact events in the next 48h that directly affect ${asset}.`;
+    const { getPulseContext, pulseContextPrompt, assessIdeaWindow } = await import("./pulse-context.server");
+    const now = new Date();
+    const ctx = await getPulseContext(now, asset);
+    const news = ctx.newsWindows;
 
     const longP = p.prediction_long ?? p.prediction ?? "?";
     const longC = p.confidence_long ?? p.confidence ?? 0;
@@ -155,8 +127,7 @@ PRIOR ANALYSIS (from this user's chart upload):
 - Long-term: ${longP} (${longC}%) — ${longR}
 - Short-term: ${shortP} (${shortC}%) — ${shortR}
 
-RED-FOLDER NEWS (next 48h, UTC):
-${newsBlock}
+${pulseContextPrompt(ctx)}
 
 Look at the attached charts and build the day-plan. Times in JSON must be UTC.`;
 
@@ -206,6 +177,12 @@ Look at the attached charts and build the day-plan. Times in JSON must be UTC.`;
     const raw = json.choices?.[0]?.message?.content ?? "";
     try {
       const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed.trade_ideas)) {
+        parsed.trade_ideas = parsed.trade_ideas.map((idea: Record<string, unknown>) => ({
+          ...idea,
+          ...assessIdeaWindow(idea.window_et, ctx, now),
+        }));
+      }
       const { error: saveError } = await context.supabase.from("trade_ideas").insert({
         user_id: context.userId,
         prediction_id: data.predictionId,
