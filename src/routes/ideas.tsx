@@ -256,11 +256,14 @@ function IdeasPage() {
                   </>
                 ) : (
                   <>
-                    <Crown className="h-4 w-4" /> Generate day-plan
+                    <Crown className="h-4 w-4" /> Generate day-plan · 1 credit
                   </>
                 )}
               </Button>
             </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Each day-plan costs 1 credit.
+            </p>
 
             {selected && (
               <p className="mt-3 text-xs text-muted-foreground">
