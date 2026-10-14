@@ -5,8 +5,8 @@ import { Activity, ArrowLeft, CalendarDays, CalendarRange, Check, Clock3, Info, 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { getPulse } from "@/lib/pulse.functions";
-import { getPulsePremium } from "@/lib/pulse-premium.functions";
+import { getPulse, getPulseContextFn } from "@/lib/pulse.functions";
+import { getLiveIdeas, getPulsePremium, type LiveIdea } from "@/lib/pulse-premium.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { Lock } from "lucide-react";
 
@@ -62,6 +62,23 @@ function PulsePage() {
     if (!user) { setPremium(null); setPremiumChecked(true); return; }
     fetchPremium().then((r) => setPremium(r.content)).catch(() => setPremium(null)).finally(() => setPremiumChecked(true));
   }, [user, authLoading, fetchPremium]);
+  const fetchCtx = useServerFn(getPulseContextFn);
+  const fetchLive = useServerFn(getLiveIdeas);
+  const [ctx, setCtx] = useState<Awaited<ReturnType<typeof getPulseContextFn>> | null>(null);
+  const [liveIdeas, setLiveIdeas] = useState<LiveIdea[]>([]);
+  useEffect(() => {
+    const run = () => { fetchCtx({ data: { asset: "NQ" } }).then(setCtx).catch(() => {}); };
+    run();
+    const t = window.setInterval(run, 60 * 1000);
+    return () => window.clearInterval(t);
+  }, [fetchCtx]);
+  useEffect(() => {
+    if (!premium) { setLiveIdeas([]); return; }
+    const run = () => { fetchLive().then((r) => setLiveIdeas(r.ideas)).catch(() => {}); };
+    run();
+    const t = window.setInterval(run, 60 * 1000);
+    return () => window.clearInterval(t);
+  }, [premium, fetchLive]);
   const [clock, setClock] = useState<Date | null>(null);
   const [news, setNews] = useState<PulseNews | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,7 +104,10 @@ function PulsePage() {
   const et = useMemo(() => getETParts(clock ?? new Date(0)), [clock]);
   const windowNow = getWindowForMinutes(et.minutesOfDay);
   const day = getDay(et.weekdayKey);
-  const season = getSeasonForMonth(et.month);
+  const localSeason = getSeasonForMonth(et.month);
+  const season = SEASONS.find((x) => x.key === ctx?.season.key) ?? localSeason;
+  const nowMs = clock?.getTime() ?? 0;
+  const countdown = (iso: string) => { const m = Math.max(0, Math.round((Date.parse(iso) - nowMs) / 60000)); return `${Math.floor(m / 60)}h ${m % 60}m`; };
   const closed = isMarketClosed(et.weekdayKey, et.minutesOfDay);
   const events = news?.events ?? [];
   const guidance = buildRightNow({ etParts: et, window: windowNow, day, season, newsEvents: events, isClosed: closed });
@@ -119,13 +139,18 @@ function PulsePage() {
       <div className="grid gap-x-8 lg:grid-cols-3">
         <section className={panel}><div className={`${label} justify-between`}><span className="flex items-center gap-2"><CalendarDays className="size-4" /> Season</span><Correlation corr={season.corr} /></div><h2 className="mt-3 text-xl font-semibold">{season.name} <span className="text-sm font-normal text-muted-foreground">/ {et.month}</span></h2><p className={`mt-2 ${muted}`}>{season.note}</p><p className="mt-2 text-xs italic text-muted-foreground">{season.caveat}</p></section>
         <section className={panel}><div className={`${label} justify-between`}><span className="flex items-center gap-2"><CalendarRange className="size-4" /> Day of week</span><Correlation corr={day.corr} /></div><h2 className="mt-3 text-xl font-semibold">{day.name}</h2><p className={`mt-2 ${muted}`}>{day.role}</p><ul className="mt-3 space-y-2 text-xs leading-relaxed text-muted-foreground">{day.lookFor.map((item) => <li key={item} className="border-l-2 border-border pl-3">{item}</li>)}</ul></section>
-        <section className={panel}><div className={`${label} justify-between`}><span className="flex items-center gap-2"><Clock3 className="size-4" /> Time of day</span><Correlation corr={windowNow.corr} /></div><h2 className="mt-3 text-xl font-semibold">{windowNow.name}</h2><p className="mt-1 text-xs text-muted-foreground">{windowNow.time} ET</p><p className={`mt-2 ${muted}`}>{windowNow.summary}</p><div className="mt-5 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full bg-chart-2 transition-[width] duration-1000" style={{ width: `${et.minutesOfDay / 14.4}%` }} /></div><div className="mt-1 flex justify-between text-[10px] text-muted-foreground"><span>12 AM</span><span>6 AM</span><span>12 PM</span><span>6 PM</span><span>12 AM</span></div><p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><Timer className="size-4 shrink-0" /> Next: <span className="font-medium text-foreground">{nextWindow.name}</span> · {Math.floor(minutesUntil / 60)}h {minutesUntil % 60}m</p></section>
+        <section className={panel}><div className={`${label} justify-between`}><span className="flex items-center gap-2"><Clock3 className="size-4" /> Time of day</span><Correlation corr={windowNow.corr} /></div><h2 className="mt-3 text-xl font-semibold">{windowNow.name}</h2><p className="mt-1 text-xs text-muted-foreground">{windowNow.time} ET</p><p className={`mt-2 ${muted}`}>{windowNow.summary}</p><div className="mt-5 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full bg-chart-2 transition-[width] duration-1000" style={{ width: `${et.minutesOfDay / 14.4}%` }} /></div><div className="mt-1 flex justify-between text-[10px] text-muted-foreground"><span>12 AM</span><span>6 AM</span><span>12 PM</span><span>6 PM</span><span>12 AM</span></div><p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><Timer className="size-4 shrink-0" /> Next: <span className="font-medium text-foreground">{nextWindow.name}</span> · {Math.floor(minutesUntil / 60)}h {minutesUntil % 60}m</p>{ctx && <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground"><Radio className="size-4 shrink-0" /> {ctx.currentKillZone ? <span>In <span className="font-medium text-foreground">{ctx.currentKillZone.name}</span> · ends in {countdown(ctx.currentKillZone.end)}</span> : <span>Outside kill zones</span>}{ctx.nextKillZone && !ctx.currentKillZone && <span>· next <span className="font-medium text-foreground">{ctx.nextKillZone.name}</span> in {countdown(ctx.nextKillZone.start)}</span>}</p>}</section>
       </div>
 
       <section className="border-b border-border py-7"><div className={`${label} justify-between`}><span className="flex items-center gap-2"><Activity className="size-4" /> Focus now</span>{!closed && <Correlation corr={guidance.corr} />}</div><h2 className="mt-3 text-2xl font-semibold">{guidance.title}</h2><p className={`mt-2 max-w-3xl ${muted}`}>{guidance.summary}</p>{guidance.dayContext && <p className="mt-3 text-xs text-muted-foreground">{guidance.dayContext}</p>}
         {guidance.warnings.length > 0 && <div className="mt-4 space-y-2">{guidance.warnings.map((warning, i) => <p key={`${warning.kind}-${i}`} className="flex gap-2 border-l-2 border-chart-4 bg-chart-4/5 px-3 py-2 text-xs leading-relaxed"><TriangleAlert className="size-4 shrink-0 text-chart-4" /><span><strong>{warning.kind}:</strong> {warning.text}</span></p>)}</div>}
         <h3 className="mt-6 text-xs font-semibold uppercase text-muted-foreground">Session checklist</h3><div className="mt-3 grid gap-2 sm:grid-cols-2">{guidance.checklist.map((item, i) => <Button key={item} variant="outline" aria-pressed={completed.includes(item)} onClick={() => setCompleted((current) => current.includes(item) ? current.filter((entry) => entry !== item) : [...current, item])} className={`h-auto min-h-12 justify-start whitespace-normal px-3 py-2 text-left text-xs font-normal leading-relaxed ${completed.includes(item) ? "text-muted-foreground line-through" : ""}`}><span className="flex size-5 shrink-0 items-center justify-center rounded border border-border">{completed.includes(item) ? <Check className="size-3" /> : i + 1}</span>{item}</Button>)}</div>
       </section>
+
+      {premium && <section className="border-b border-border py-7"><h2 className={`${label} !text-foreground`}><Timer className="size-4" /> Your ideas right now</h2><p className="mt-2 text-xs text-muted-foreground">Saved trade ideas whose window is open or starts within 2 hours.</p>
+        {liveIdeas.length === 0 ? <p className="mt-4 text-sm text-muted-foreground">No saved ideas in the next 2 hours. <Link to="/ideas" className="text-primary underline-offset-4 hover:underline">Build a day-plan</Link></p> :
+        <div className="mt-4 divide-y divide-border">{liveIdeas.map((idea) => { const open = Date.parse(idea.window_start) <= nowMs; return <div key={idea.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm"><div><p className="font-medium">{idea.asset} · <span className={idea.direction === "LONG" ? "text-chart-2" : "text-destructive"}>{idea.direction}</span></p><p className="mt-1 text-xs text-muted-foreground">{idea.kill_zone ?? "—"}{idea.entry_zone ? ` · entry ${idea.entry_zone}` : ""}</p></div><div className="flex items-center gap-2">{idea.pulse_alignment && <Badge variant="outline" className="text-[10px]">{idea.pulse_alignment.replace("_", " ")}</Badge>}<Badge variant="outline" className={open ? "border-chart-2/40 text-chart-2" : ""}>{open ? `Open · closes in ${countdown(idea.window_end)}` : `Starts in ${countdown(idea.window_start)}`}</Badge></div></div>; })}</div>}
+      </section>}
 
       <section className="border-b border-border py-7"><div className="flex flex-wrap items-center justify-between gap-3"><h2 className={`${label} !text-foreground`}><Newspaper className="size-4" /> Red-folder news · this week</h2><Button size="sm" variant="outline" disabled={loading} onClick={() => void load()} title="Refresh calendar"><RefreshCw className={loading ? "animate-spin" : ""} /> Refresh</Button></div><p className="mt-2 text-xs text-muted-foreground">High-impact economic events from the Forex Factory calendar · all times ET</p>
         {news?.error && <p role="alert" className="mt-4 flex gap-2 text-xs text-destructive"><TriangleAlert className="size-4 shrink-0" /> {news.stale ? "Showing the last available calendar." : "Live calendar is unavailable."} {news.error}</p>}
