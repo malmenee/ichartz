@@ -255,12 +255,14 @@ function AppPage() {
               </>
             ) : (
               <>
-                <Sparkles className="h-4 w-4" /> Analyze ({uploadedCount}/5)
+                <Sparkles className="h-4 w-4" /> Analyze ({uploadedCount}/5) · 1
+                credit
               </>
             )}
           </Button>
 
           <p className="mt-2 text-xs text-muted-foreground">
+            Costs 1 credit per analysis — upload at least one chart to enable it.
             Tip: the more timeframes you provide (1D → 1m), the more accurate the
             top-down read.
           </p>
